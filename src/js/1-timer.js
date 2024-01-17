@@ -4,7 +4,6 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import icon from '../img/octagon.svg';
 
-const input = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('[data-start]');
 const timerDays = document.querySelector('[data-days]');
 const timerHours = document.querySelector('[data-hours]');
@@ -13,6 +12,7 @@ const timerSeconds = document.querySelector('[data-seconds]');
 
 startBtn.addEventListener('click', onStartTimer);
 
+let changedTimerData = false;
 let userSelectedDate = 0;
 startBtn.disabled = true;
 
@@ -40,6 +40,7 @@ const options = {
     } else {
       startBtn.disabled = false;
     }
+    changedTimerData = true;
   },
 };
 
@@ -64,19 +65,24 @@ function addLeadingZero(value) {
 }
 
 function onStartTimer() {
+  changedTimerData = false;
   const intervalId = setInterval(() => {
     const timeDifference = userSelectedDate - Date.now();
     const time = convertMs(timeDifference);
+
     timerDays.textContent = addLeadingZero(time.days);
     timerHours.textContent = addLeadingZero(time.hours);
     timerMinutes.textContent = addLeadingZero(time.minutes);
     timerSeconds.textContent = addLeadingZero(time.seconds);
+
+    if (timeDifference <= 1000 || changedTimerData === true) {
+      clearInterval(intervalId);
+      timerDays.textContent = '00';
+      timerHours.textContent = '00';
+      timerMinutes.textContent = '00';
+      timerSeconds.textContent = '00';
+    }
   }, 1000);
 
-  setTimeout(() => {
-    clearInterval(intervalId);
-  }, userSelectedDate - Date.now());
-
-  input.disabled = true;
   startBtn.disabled = true;
 }

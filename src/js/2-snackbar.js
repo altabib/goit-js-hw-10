@@ -1,7 +1,5 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
-import iconOk from '../img/bi_check2-circle.svg';
-import iconError from '../img/octagon.svg';
 
 const form = document.querySelector('.form');
 
@@ -10,44 +8,42 @@ form.addEventListener('submit', handleSubmit);
 function handleSubmit(ev) {
   ev.preventDefault();
 
-  const delay = ev.target.elements.delay.value;
+  const delay = Number(ev.target.elements.delay.value);
   const value = ev.target.elements.state.value;
 
   const makePromise = () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (value === 'fulfilled') {
-          resolve(value);
+          resolve(`✅ Fulfilled promise in ${delay}ms`);
         }
-        reject(value);
+        reject(`❌ Rejected promise in ${delay}ms`);
       }, delay);
     });
   };
 
   makePromise()
-    .then(() => {
+    .then(value => {
+      console.log(value);
       iziToast.show({
-        iconUrl: iconOk,
         theme: 'dark',
-        title: 'OK',
-        titleColor: 'white',
-        message: `Fulfilled promise in ${delay}ms`,
+        message: `${value}`,
         messageSize: '16px',
         messageColor: 'white',
         backgroundColor: '#59A10D',
         position: 'topRight',
       });
     })
-    .catch(() => {
+    .catch(error => {
+      console.log(error);
       iziToast.show({
-        iconUrl: iconError,
-        title: `Error`,
-        titleColor: 'white',
-        message: 'Illegal operation',
+        message: `${error}`,
         messageSize: '16px',
         messageColor: 'white',
         backgroundColor: '#EF4040',
         position: 'topRight',
       });
     });
+
+  ev.target.reset();
 }
